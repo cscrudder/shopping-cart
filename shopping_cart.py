@@ -14,20 +14,22 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 # email syntax came from Prof Rossetti's hints
 
+# Imports pandas to read the csv file, per Professor Rossetti's hint
 from pandas import read_csv
-
 
 # Loads global variables
 load_dotenv()
 
-
+# checks to see if a products.csv file exists. If not, it uses the default
 if os.path.exists(os.path.join(os.path.dirname(__file__), "data", "products.csv")) == True:
     csv_filepath = os.path.join(os.path.dirname(__file__), "data", "products.csv")
 else:
     csv_filepath = os.path.join(os.path.dirname(__file__), "data", "default_products.csv")
+
+#reads the csv file into products variable
 products = read_csv(csv_filepath) 
+#pandas transforms the data into a list of dictionaries
 products = products.to_dict('records')
-print(products)
 
 # Products given by Prof. Rossetti
 #  products = [
@@ -190,7 +192,7 @@ while True:
             print(err)
         break
     elif email_yn.lower()=='n':
-        print('Thank you for shopping! Your receipt is printed above and will not be emailed.')
+        print('Thank you for shopping! Your receipt is printed above and will not be emailed.\n')
         break
     else: 
         print("Try again, that was not a vaild input.")

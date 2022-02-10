@@ -1,2 +1,3 @@
 python-dotenv # note: NOT just "dotenv"
 sendgrid
+pandas

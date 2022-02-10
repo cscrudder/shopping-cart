@@ -20,6 +20,11 @@ Install package dependencies for email:
 pip install -r requirements.txt
 ```
 
+## Setting up the Inventory Database
+This program takes data from a .csv file to set the products the store has in stock. There is a default_products.csv file that will be used if the user does not create a specific inventory list for their store.
+
+To make a specific inventory list, create a .csv file called "products" in the data file within the "shopping-cart" file that you downloaded from GitHub. You can open that file with any .csv editor (like Microsoft Excel) and put in new items or remove existing ones. Make sure that you are providing a UNIQUE id number, an item price, and an item name.
+
 ## Setting up Tax Rate
 
 Create a .env file. It will stay on your laptop, so your information is safe. Open the project file in VS Code. Click the "Explorer" tab in the upper left. Then, in the shopping-cart file, click the "New File" icon. Type ".env" in the box. Open the ".env" file. Type:
