@@ -1,7 +1,9 @@
 # .env file with sensitive and location-specific information will not be uploaded
 .env
 
-auth/google-credentials.json
+# ignore the products CSV file inventory (but not the default):
+data/products.csv
+!data/default_products.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
