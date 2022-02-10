@@ -1,6 +1,8 @@
 # .env file with sensitive and location-specific information will not be uploaded
 .env
 
+auth
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
