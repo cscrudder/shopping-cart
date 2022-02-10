@@ -23,7 +23,7 @@ pip install -r requirements.txt
 ## Setting up the Inventory Database
 This program takes data from a .csv file to set the products the store has in stock. There is a default_products.csv file that will be used if the user does not create a specific inventory list for their store.
 
-To make a specific inventory list, create a .csv file called "products" in the data file within the "shopping-cart" file that you downloaded from GitHub. You can open that file with any .csv editor (like Microsoft Excel) and put in new items or remove existing ones. Make sure that you are providing a UNIQUE id number, an item price, and an item name.
+Copy the "defualt_products.csv" file in the "data" file within the "shopping-cart" file and rename the copy "products.csv" You can open that file with any .csv editor (like Microsoft Excel) and put in new items or remove existing ones. Make sure that you are providing a UNIQUE id number, an item price, and an item name. Do not change the column headings.
 
 ## Setting up Tax Rate
 
@@ -67,7 +67,7 @@ Put the email address associated with your SendGrid account to the right of the 
 SENDER_ADDRESS = your@email
 ```
 
-## Usage
+## Running
 This program allow you to enter the 'id' numbers of a the products a customer is purchasing. It then aggregates the purchases, prints a receipt in the terminal and gives the user an option to send an emailed receipt.
 
 To run the program, type:
@@ -76,3 +76,25 @@ To run the program, type:
 python shopping_cart.py
 ```
 
+## Usage
+The program will first prompt the user to input a product identifier:
+
+```sh
+Please input a product identifier:
+```
+
+The user must enter the product identifiers for products he or she wishes to check out. The program will continue to ask for product identifiers until the user types 'done':
+
+```sh
+Please input a product identifier: done
+```
+
+Then, a receipt is generated. The user will be asked if they would like an emailed receipt: 
+
+```sh
+Would you like your receipt emailed? y/n
+```
+
+The user must type 'y' or 'n'. If the input is not 'y' or 'n', the user will be prompted to answer again until 'y' or 'n' is given.
+
+If the user chooses 'y', the email is automatically sent.
