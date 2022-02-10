@@ -1,23 +1,24 @@
-# shopping_cart.py
-
-
-## Sending receipts via email
+# TO DO:
 ## Integrating with a CSV File Datastore
 ## Integrating with a google sheets datastore
 
+# Import datetime for receipt time.
 from datetime import datetime
-now = datetime.now()
-#date and time syntax came from Programiz: https://www.programiz.com/python-programming/datetime/current-datetime
+# date and time syntax came from Programiz: https://www.programiz.com/python-programming/datetime/current-datetime
 
+# Imports os and dotenv to get global variables
 import os
 from dotenv import load_dotenv
 
-
+# Import sengrid modules for emailing
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+# email syntax came from Prof Rosetti's hints
 
+# Loads global variables
 load_dotenv()
 
+# Products given by Prof. Rosetti
 products = [
     {"id":1, "name": "Chocolate Sandwich Cookies", "department": "snacks", "aisle": "cookies cakes", "price": 3.50},
     {"id":2, "name": "All-Seasons Salt", "department": "pantry", "aisle": "spices seasonings", "price": 4.99},
@@ -41,6 +42,7 @@ products = [
     {"id":20, "name": "Pomegranate Cranberry & Aloe Vera Enrich Drink", "department": "beverages", "aisle": "juice nectars", "price": 4.25}
 ] # based on data from Instacart: https://www.instacart.com/datasets/grocery-shopping-2017
 
+# Function to format as USD
 def to_usd(my_price):
     """
     Converts a numeric value to usd-formatted string, for printing and display purposes.
@@ -57,89 +59,127 @@ def to_usd(my_price):
 # CLEARS OUT ANY PAST TRANSACTION
 matching_products = []
 
-# ALLOWS USER TO ENTER IN ANY INPUTS AND THEN ADDS THE PRODUCT INFO TO LIST
-
+# Creates list of ids of in stock products to use for validation
 product_ids = [str(product['id']) for product in products]
 
+# ALLOWS USER TO ENTER IN ANY INPUTS AND THEN ADDS THE PRODUCT INFO TO LIST
 while True:
     product_input = input('Please input a product identifier: ')
+    # allows user to end input process by typing 'done'
     if product_input.lower() == 'done':
         break
+    # validates inputted id based on what's in stock
     elif product_input not in product_ids:
         print('Hey, are you sure that product identifier is correct? Please try again!')
+    # appends the item details based on 'id'
     else: 
         for product in products:
             if str(product['id']) == str(product_input):
                 matching_products.append(product)
 
 
-
+# PRINTS RECEIPT IN TERMINAL
 print('\n------------------------------')
 print('        Whole Foods')
 print('     www.WholeFoods.com')
 print('------------------------------')
+
+#Sets and formats time
+now = datetime.now()
 d1 = now.strftime("%B %d, %Y %H:%M:%S")
 print(f'  {d1}  ')
 print('------------------------------')
 print('Selected Products:')
 print('------------------------------')
+
+# Loops through matching_products and prints what the customer bought
 for match in matching_products:
     print(" ... "+ match['name'] + " (" + str(to_usd(match['price'])) + ")")
 print('------------------------------')
+
+# Creates list of prices. Clears it first.
 prices = []
 for match in matching_products:
     prices.append(float(match['price']))
+
+# sums the prices
 subtotal = sum(prices)
+
+# prints subtotal
 print(f'SUBTOTAL: {to_usd(subtotal)}')
+
+# gets tax rate from .env file
 tax_rate = float(os.getenv("TAX_RATE", default = "0.0875"))
+
+# calculates and prints tax
 tax = subtotal * tax_rate
 print(f'TAX: {to_usd(tax)}')
+
+# calculates and prints total
 total = tax + subtotal
 print(f'TOTAL: {to_usd(total)}')
+
+# prints footer
 print('------------------------------')
 print('Thank you for shopping at WF.')
 print('------------------------------\n')
 
-email_yn = input('Would you like your email printed? y/n ')
-if email_yn.lower() == 'y':
-    email_input = input('What email would you like the recipt to be sent to? ')
-    html_items_list = ""
-    for match in matching_products:
-        html_items_list += "<li>" + match['name'] + " (" + str(to_usd(match['price'])) + ") " + "</li>"
+# requires the user to input 'y' or 'n'
+while True:
+    # takes user input
+    email_yn = input('Would you like your email printed? y/n ')
+    # if the user wants an email....
+    if email_yn.lower() == 'y':
+        # gets the user's email
+        email_input = input('What email would you like the recipt to be sent to? ')
+        
+        # creates formatted list to email out
+        html_items_list = ""
+        for match in matching_products:
+            html_items_list += "<li>" + match['name'] + " (" + str(to_usd(match['price'])) + ") " + "</li>"
 
-    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", default="OOPS, please set env var called 'SENDGRID_API_KEY'")
-    SENDER_ADDRESS = os.getenv("SENDER_ADDRESS", default="OOPS, please set env var called 'SENDER_ADDRESS'")
+        # gets SENGRID info from .env
+        SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", default="OOPS, please set env var called 'SENDGRID_API_KEY'")
+        SENDER_ADDRESS = os.getenv("SENDER_ADDRESS", default="OOPS, please set env var called 'SENDER_ADDRESS'")
 
-    client = SendGridAPIClient(SENDGRID_API_KEY) #> <class 'sendgrid.sendgrid.SendGridAPIClient>
-    print("CLIENT:", type(client))
+        client = SendGridAPIClient(SENDGRID_API_KEY) #> <class 'sendgrid.sendgrid.SendGridAPIClient>
+        print("CLIENT:", type(client))
 
-    subject = "Your Receipt from Whole Foods"
+        # subject of email
+        subject = "Your Receipt from Whole Foods"
+        
+        # content of email
+        html_content = html_content = f"""
+        <h2>Hello, this is your receipt from Whole Foods.</h2>
+        <h3>Date: {now.strftime("%B %d, %Y %H:%M:%S")}</h3>
+        <p>Subtotal: {to_usd(subtotal)}</p>
+        <p>Tax: {to_usd(tax)}</p>
+        <p><h3>Total: {to_usd(total)}</h3></p>
+        <p>You ordered:</p>
+        <ul>
+            {html_items_list}
+        </ul>
+        """
+        print("HTML:", html_content)
 
-    html_content = html_content = f"""
-    <h2>Hello, this is your receipt from Whole Foods.</h2>
-    <h3>Date: {now.strftime("%B %d, %Y %H:%M:%S")}</h3>
-    <p>Subtotal: {to_usd(subtotal)}</p>
-    <p>Tax: {to_usd(tax)}</p>
-    <p><h3>Total: {to_usd(total)}</h3></p>
-    <p>You ordered:</p>
-    <ul>
-        {html_items_list}
-    </ul>
-    """
-    print("HTML:", html_content)
+        # FYI: we'll need to use our verified SENDER_ADDRESS as the `from_email` param
+        # ... but we can customize the `to_emails` param to send to other addresses
+        message = Mail(from_email=SENDER_ADDRESS, to_emails=email_input, subject=subject, html_content=html_content)
 
-    # FYI: we'll need to use our verified SENDER_ADDRESS as the `from_email` param
-    # ... but we can customize the `to_emails` param to send to other addresses
-    message = Mail(from_email=SENDER_ADDRESS, to_emails=email_input, subject=subject, html_content=html_content)
+        try:
+            response = client.send(message)
 
-    try:
-        response = client.send(message)
+            print("RESPONSE:", type(response)) #> <class 'python_http_client.client.Response'>
+            print(response.status_code) #> 202 indicates SUCCESS
+            print(response.body)
+            print(response.headers)
 
-        print("RESPONSE:", type(response)) #> <class 'python_http_client.client.Response'>
-        print(response.status_code) #> 202 indicates SUCCESS
-        print(response.body)
-        print(response.headers)
-
-    except Exception as err:
-        print(type(err))
-        print(err)
+        except Exception as err:
+            print(type(err))
+            print(err)
+        break
+    elif email_yn.lower()=='n':
+        print('Thank you for shopping! Your receipt is printed above and will not be emailed.')
+        break
+    else: 
+        print("Try again, that was not a vaild input.")

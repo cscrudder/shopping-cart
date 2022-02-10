@@ -1,3 +1,4 @@
+# .env file with sensitive and location-specific information will not be uploaded
 .env
 
 # Byte-compiled / optimized / DLL files

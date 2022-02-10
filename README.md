@@ -14,7 +14,7 @@ Activate the virtual environment:
 conda activate shopping-env
 ```
 
-Install package dependencies (mainly for testing):
+Install package dependencies for email:
 
 ```sh
 pip install -r requirements.txt
