@@ -1,9 +1,18 @@
 # shopping_cart.py
 
+## Sales tax rate
+## Sending receipts via email
+## Integrating with a CSV File Datastore
+## Integrating with a google sheets datastore
 
 from datetime import datetime
 now = datetime.now()
 #date and time syntax came from Programiz: https://www.programiz.com/python-programming/datetime/current-datetime
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+print(os.getenv("TAX_RATE"))
 
 products = [
     {"id":1, "name": "Chocolate Sandwich Cookies", "department": "snacks", "aisle": "cookies cakes", "price": 3.50},
@@ -47,7 +56,6 @@ matching_products = []
 # ALLOWS USER TO ENTER IN ANY INPUTS AND THEN ADDS THE PRODUCT INFO TO LIST
 
 product_ids = [str(product['id']) for product in products]
-print(product_ids)
 
 while True:
     product_input = input('Please input a product identifier: ')
@@ -79,7 +87,9 @@ for match in matching_products:
     prices.append(float(match['price']))
 subtotal = sum(prices)
 print(f'SUBTOTAL: {to_usd(subtotal)}')
-tax = subtotal * 0.0875
+tax_rate = float(os.getenv("TAX_RATE", default = "0.1"))
+print("TAX RATE:", tax_rate)
+tax = subtotal * tax_rate
 print(f'TAX: {to_usd(tax)}')
 total = tax + subtotal
 print(f'TOTAL: {to_usd(total)}')
