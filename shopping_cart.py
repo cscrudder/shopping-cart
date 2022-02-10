@@ -45,17 +45,24 @@ def to_usd(my_price):
 matching_products = []
 
 # ALLOWS USER TO ENTER IN ANY INPUTS AND THEN ADDS THE PRODUCT INFO TO LIST
+
+product_ids = [str(product['id']) for product in products]
+print(product_ids)
+
 while True:
     product_input = input('Please input a product identifier: ')
     if product_input.lower() == 'done':
         break
+    elif product_input not in product_ids:
+        print('Hey, are you sure that product identifier is correct? Please try again!')
+    else: 
+        for product in products:
+            if str(product['id']) == str(product_input):
+                matching_products.append(product)
 
-    for product in products:
-        if str(product['id']) == str(product_input):
-            matching_products.append(product)
 
 
-print('------------------------------')
+print('\n------------------------------')
 print('        Whole Foods')
 print('     www.WholeFoods.com')
 print('------------------------------')
@@ -78,4 +85,4 @@ total = tax + subtotal
 print(f'TOTAL: {to_usd(total)}')
 print('------------------------------')
 print('Thank you for shopping at WF.')
-print('------------------------------')
+print('------------------------------\n')
