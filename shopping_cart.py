@@ -1,5 +1,10 @@
 # shopping_cart.py
 
+
+from datetime import datetime
+now = datetime.now()
+#date and time syntax came from Programiz: https://www.programiz.com/python-programming/datetime/current-datetime
+
 products = [
     {"id":1, "name": "Chocolate Sandwich Cookies", "department": "snacks", "aisle": "cookies cakes", "price": 3.50},
     {"id":2, "name": "All-Seasons Salt", "department": "pantry", "aisle": "spices seasonings", "price": 4.99},
@@ -35,19 +40,42 @@ def to_usd(my_price):
     """
     return f"${my_price:,.2f}" #> $12,000.71
 
-# ASK FOR USER INPUT
-    # List for inputted products
-product_ids = []
 
-product_input = int(input('Please input a product identifier: '))
-
-product_ids.append(product_input)
-
-# LOOK UP CORRESPONDING PRODUCTS
+# CLEARS OUT ANY PAST TRANSACTION
 matching_products = []
-matching_products = [product for product in products if product['id'] == product_input]
-print(matching_products)
 
-# Print the name of the matching product
-for p in matching_products:
-    print(p['name'])
+# ALLOWS USER TO ENTER IN ANY INPUTS AND THEN ADDS THE PRODUCT INFO TO LIST
+while True:
+    product_input = input('Please input a product identifier: ')
+    if product_input.lower() == 'done':
+        break
+
+    for product in products:
+        if str(product['id']) == str(product_input):
+            matching_products.append(product)
+
+
+print('------------------------------')
+print('        Whole Foods')
+print('     www.WholeFoods.com')
+print('------------------------------')
+d1 = now.strftime("%B %d, %Y %H:%M:%S")
+print(f'  {d1}  ')
+print('------------------------------')
+print('Selected Products:')
+print('------------------------------')
+for match in matching_products:
+    print(" ... "+ match['name'] + " (" + str(to_usd(match['price'])) + ")")
+print('------------------------------')
+prices = []
+for match in matching_products:
+    prices.append(float(match['price']))
+subtotal = sum(prices)
+print(f'SUBTOTAL: {to_usd(subtotal)}')
+tax = subtotal * 0.0875
+print(f'TAX: {to_usd(tax)}')
+total = tax + subtotal
+print(f'TOTAL: {to_usd(total)}')
+print('------------------------------')
+print('Thank you for shopping at WF.')
+print('------------------------------')
