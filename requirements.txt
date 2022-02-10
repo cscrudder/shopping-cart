@@ -1,1 +1,2 @@
-python-dotenv
+python-dotenv # note: NOT just "dotenv"
+sendgrid
