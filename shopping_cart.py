@@ -1,6 +1,6 @@
 # shopping_cart.py
 
-## Sales tax rate
+
 ## Sending receipts via email
 ## Integrating with a CSV File Datastore
 ## Integrating with a google sheets datastore
@@ -11,8 +11,12 @@ now = datetime.now()
 
 import os
 from dotenv import load_dotenv
+
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 load_dotenv()
-print(os.getenv("TAX_RATE"))
 
 products = [
     {"id":1, "name": "Chocolate Sandwich Cookies", "department": "snacks", "aisle": "cookies cakes", "price": 3.50},
@@ -87,8 +91,7 @@ for match in matching_products:
     prices.append(float(match['price']))
 subtotal = sum(prices)
 print(f'SUBTOTAL: {to_usd(subtotal)}')
-tax_rate = float(os.getenv("TAX_RATE", default = "0.1"))
-print("TAX RATE:", tax_rate)
+tax_rate = float(os.getenv("TAX_RATE", default = "0.0875"))
 tax = subtotal * tax_rate
 print(f'TAX: {to_usd(tax)}')
 total = tax + subtotal
@@ -96,3 +99,47 @@ print(f'TOTAL: {to_usd(total)}')
 print('------------------------------')
 print('Thank you for shopping at WF.')
 print('------------------------------\n')
+
+email_yn = input('Would you like your email printed? y/n ')
+if email_yn.lower() == 'y':
+    email_input = input('What email would you like the recipt to be sent to? ')
+    html_items_list = ""
+    for match in matching_products:
+        html_items_list += "<li>" + match['name'] + " (" + str(to_usd(match['price'])) + ") " + "</li>"
+
+    SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", default="OOPS, please set env var called 'SENDGRID_API_KEY'")
+    SENDER_ADDRESS = os.getenv("SENDER_ADDRESS", default="OOPS, please set env var called 'SENDER_ADDRESS'")
+
+    client = SendGridAPIClient(SENDGRID_API_KEY) #> <class 'sendgrid.sendgrid.SendGridAPIClient>
+    print("CLIENT:", type(client))
+
+    subject = "Your Receipt from Whole Foods"
+
+    html_content = html_content = f"""
+    <h2>Hello, this is your receipt from Whole Foods.</h2>
+    <h3>Date: {now.strftime("%B %d, %Y %H:%M:%S")}</h3>
+    <p>Subtotal: {to_usd(subtotal)}</p>
+    <p>Tax: {to_usd(tax)}</p>
+    <p><h3>Total: {to_usd(total)}</h3></p>
+    <p>You ordered:</p>
+    <ul>
+        {html_items_list}
+    </ul>
+    """
+    print("HTML:", html_content)
+
+    # FYI: we'll need to use our verified SENDER_ADDRESS as the `from_email` param
+    # ... but we can customize the `to_emails` param to send to other addresses
+    message = Mail(from_email=SENDER_ADDRESS, to_emails=email_input, subject=subject, html_content=html_content)
+
+    try:
+        response = client.send(message)
+
+        print("RESPONSE:", type(response)) #> <class 'python_http_client.client.Response'>
+        print(response.status_code) #> 202 indicates SUCCESS
+        print(response.body)
+        print(response.headers)
+
+    except Exception as err:
+        print(type(err))
+        print(err)
