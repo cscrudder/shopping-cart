@@ -1,7 +1,7 @@
 # .env file with sensitive and location-specific information will not be uploaded
 .env
 
-auth
+auth/google-credentials.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
