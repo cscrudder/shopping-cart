@@ -1,6 +1,3 @@
-# TO DO:
-## Integrating with a google sheets datastore
-
 # Import datetime for receipt time.
 from datetime import datetime
 # date and time syntax came from Programiz: https://www.programiz.com/python-programming/datetime/current-datetime
